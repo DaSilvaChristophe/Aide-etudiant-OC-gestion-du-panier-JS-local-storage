@@ -1,4 +1,4 @@
-// BASE DE TRAVAIL DONNER
+// TRAVAIL EFFECTUER (REMISE EN ETAT FONCTIONNEL - RECTIFICATION DES PROBLEMES CITER)
 
 const str = window.location;
 const url = new URL(str);
@@ -8,15 +8,12 @@ const objectURL = host + "api/products/" + id;
 
 let productData = [];
 
-
-
 const fetchProduct =async () => {
     await fetch(objectURL)
     .then ((res) => res.json())
     .then ((promise) => {productData = promise
     console.log(productData); })   
 };
-
 
 const productDisplay = async () =>{
     await fetchProduct();
@@ -32,7 +29,6 @@ const productDisplay = async () =>{
     document.getElementById("description").innerHTML = `
     ${productData.description}
     `;
-    
     
     let select = document.getElementById("colors");
     console.log(select);
@@ -52,45 +48,47 @@ const add2Cart = () => {
   let button = document.getElementById("addToCart");
   console.log(button);
   button.addEventListener("click", () => {
-    let productAdded = JSON.parse(localStorage.getItem("Promise"));
+
     let select = document.getElementById("colors");
+    let quantity = document.getElementById('quantity').value;
     console.log(select.value);
-    console.log(productAdded);
+    console.log(quantity)
 
-    const productQuantity = Object.assign({}, productData,{
-      colors: `${select.value}`,
-      quantity: 1,
-    });
-    console.log(productQuantity);
-
-    if (productAdded == null) {
-      productAdded = [];
-      productAdded.push(productQuantity);
-      console.log(productAdded);
-      localStorage.setItem("promise", JSON.stringify(productAdded));  
-    } 
-      for (i = 0; i < productAdded.length; i++) {
-        console.log("test000");
-        if(productAdded[i]._id == productData._id && productAdded[i].colors == select.value) {
-           return( 
-            productAdded[i].quantity++,
-            console.log("quantity++"),
-            localStorage.setItem("promise",JSON.stringify(productAdded)),
-            (productAdded = JSON.parse(localStorage.getItem("promise")))
-           );
-        }
-      }
-      for (i = 0; i < productAdded.length; i++) {
-        if(productAdded[i]._id == productData._id && productAdded[i].colors != select.value) {
-          return (console.log("test001"),
-          productAdded.push(productQuantity),
-          localSorage.setItem(`promise`,JSON.stringify(productAdded)),
-          productAdded= JSON.parse(localStorage.getItem("promise")))   
-        }
+    const saveBasket = (basket) => {
+      localStorage.setItem('basket',JSON.stringify(basket));
+    }
+    
+    const getBasket = () => {
+      let basket = JSON.parse(localStorage.getItem('basket'));
+      if(basket === null){
+        return basket = [];
+      } else {
+        return basket;
       }
     }
-   
-  );
-  return (productAdded = JSON.parse(localStorage.getItem("promise")));
+  
+    const addBasket = () => {
+      
+      const productQuantity = Object.assign({}, productData,{
+        colors: `${select.value}`,
+        quantity: `${quantity}`,
+      });
+      console.log(productQuantity);
+      
+      let basket = getBasket();
+      
+      let searchProduct = basket.find(p => p._id === productQuantity._id && p.colors === productQuantity.colors);
+      if(searchProduct != undefined){
+        for(let i = 0; i < productQuantity.quantity; i++){
+        searchProduct.quantity++ ;}
+      } else {
+        productQuantity.quantity = productQuantity.quantity;
+        basket.push(productQuantity);
+      }
+      saveBasket(basket);
+    }
 
-}
+    addBasket();
+
+  })
+};
